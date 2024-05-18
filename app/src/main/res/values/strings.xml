@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Demo1</string>
+    <string name="TopName">厂中厂安全用电侧控制APP</string>
+    <string name="Title1">状态：</string>
+    <string name="State1">运行状态：</string>
+    <string name="State2">空闲状态</string>
+    <string name="State3">工作模式：</string>
+    <string name="State4">自动模式</string>
+    <string name="Title2">系统数据：</string>
+    <string name="Title3">能耗情况：</string>
+    <string name="Current"> </string>
+    <string name="current">电 流</string>
+    <string name="Power"> </string>
+    <string name="power">功 率</string>
+    <string name="Temp"> </string>
+    <string name="temp">温 度</string>
+    <string name="Open">开闸</string>
+    <string name="Close">合闸</string>
+    <string name="mqtt">MQTT:</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+</resources>
