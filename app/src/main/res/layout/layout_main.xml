@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/layout_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -48,7 +48,7 @@
                         android:layout_width="18dp"
                         android:layout_height="19dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/a" />
+                        android:src="@mipmap/mqtt"/>
 
                     <TextView
                         android:id="@+id/m_mqtt1"

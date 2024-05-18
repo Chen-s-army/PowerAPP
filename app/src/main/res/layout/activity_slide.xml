@@ -13,7 +13,13 @@
         android:layout_height="match_parent">
         <!-- 菜单界面布局 -->
         <include layout="@layout/layout_menu" />
-        <!-- 主界面布局 -->
-        <include layout="@layout/layout_main" />
+        <!-- 动态替换布局的容器 -->
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!-- 默认加载主界面布局 -->
+            <include layout="@layout/layout_main" />
+        </FrameLayout>
     </com.example.demo1.SlideMenu>
 </RelativeLayout>

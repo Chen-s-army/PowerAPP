@@ -37,8 +37,6 @@ dependencies {
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'com.android.support:design:29.1.1'
-    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity

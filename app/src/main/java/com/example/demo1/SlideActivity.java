@@ -1,6 +1,5 @@
 package com.example.demo1;
 
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -8,16 +7,19 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +38,6 @@ import org.json.JSONObject;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 
 public class SlideActivity extends AppCompatActivity {
     private TextView mqttStatusTextView;
@@ -58,7 +59,7 @@ public class SlideActivity extends AppCompatActivity {
     // 声明控件
     private TextView mHead;
     private SlideMenu slideMenu;
-
+    private FrameLayout contentFrame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,19 +67,19 @@ public class SlideActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_slide);
 
-        lineChart = findViewById(R.id.lineChart);
-        btnOpen = findViewById(R.id.btn_open);
-        mqttStatusTextView = findViewById(R.id.m_mqtt1);
-        current = findViewById(R.id.current);
-        power = findViewById(R.id.power);
-        temperature = findViewById(R.id.temperature);
         // 找到控件
-
         mHead = findViewById(R.id.top_title);
         slideMenu = findViewById(R.id.slideMenu);
+        contentFrame = findViewById(R.id.content_frame);
+
+        // menu部分控件
+        TextView menuHome = findViewById(R.id.menu_home);
+        TextView menuInfo = findViewById(R.id.menu_info);
+        TextView menuSetting = findViewById(R.id.menu_setting);
+        TextView menuAbout = findViewById(R.id.menu_about);
+        TextView menuExit = findViewById(R.id.menu_exit);
 
         // 实现侧滑部分
-
         mHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +91,68 @@ public class SlideActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // 侧边部分对应页面跳转
+        menuHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 动态切换为主页面
+                switchContent(R.layout.layout_main, SlideActivity.this::initHomePage);
+            }
+        });
+        menuInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 动态切换为个人信息页面
+                switchContent(R.layout.layout_info, SlideActivity.this::initInfoPage);
+            }
+        });
+        menuSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 动态切换为设置页面
+                switchContent(R.layout.layout_setting, SlideActivity.this::initSettingPage);
+            }
+        });
+        menuAbout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 动态切换为关于页面
+                switchContent(R.layout.layout_about, SlideActivity.this::initAboutPage);
+            }
+        });
+        menuExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 退出应用
+                finish();
+            }
+        });
+
+        // 默认加载主界面
+        switchContent(R.layout.layout_main, this::initHomePage);
+    }
+
+    // 动态切换布局的方法
+    private void switchContent(int layoutId, Runnable initializer) {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View newView = inflater.inflate(layoutId, null);
+        contentFrame.removeAllViews();
+        contentFrame.addView(newView);
+
+        // 调用相应的初始化方法
+        initializer.run();
+    }
+
+    // 初始化主页面
+    private void initHomePage() {
+        lineChart = findViewById(R.id.lineChart);
+        btnOpen = findViewById(R.id.btn_open);
+        mqttStatusTextView = findViewById(R.id.m_mqtt1);
+        current = findViewById(R.id.current);
+        power = findViewById(R.id.power);
+        temperature = findViewById(R.id.temperature);
+
         // MQTT连接
         Mqtt_init();
         startReconnect();
@@ -102,15 +165,14 @@ public class SlideActivity extends AppCompatActivity {
                     case 3: // MQTT 收到消息回传
                         Log.d("MQTT", "处理消息: " + msg.obj.toString());
                         String receivedMessage = msg.obj.toString();
-                        parseJsonObj(receivedMessage);// 解析接收到的 JSON 数据并更新 UI
-                        System.out.println(receivedMessage);   // 显示MQTT数据
+                        parseJsonObj(receivedMessage); // 解析接收到的 JSON 数据并更新 UI
+                        System.out.println(receivedMessage); // 显示MQTT数据
                         break;
                     case 30: // 连接失败
                         Toast.makeText(SlideActivity.this, "连接失败", Toast.LENGTH_SHORT).show();
                         mqttStatusTextView.setText("未连接");
                         break;
                     case 31: // 连接成功
-//                        Toast.makeText(MainActivity.this, "连接成功", Toast.LENGTH_SHORT).show();
                         mqttStatusTextView.setText("已连接");
                         Log.d("MQTT", "已连接");
 
@@ -127,6 +189,7 @@ public class SlideActivity extends AppCompatActivity {
                 }
             }
         };
+
         // 加载图表数据
         loadChartData();
 
@@ -140,25 +203,50 @@ public class SlideActivity extends AppCompatActivity {
         });
     }
 
+    // 初始化个人信息页面
+    private void initInfoPage() {
+        EditText nameEditText = findViewById(R.id.info_name);
+        EditText emailEditText = findViewById(R.id.info_email);
+        Button saveButton = findViewById(R.id.info_save);
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = nameEditText.getText().toString();
+                String email = emailEditText.getText().toString();
+                // 保存个人信息的逻辑
+            }
+        });
+    }
+
+    // 初始化设置页面
+    private void initSettingPage() {
+        // 在这里初始化设置页面的控件和逻辑
+    }
+
+    // 初始化关于页面
+    private void initAboutPage() {
+        // 在这里初始化关于页面的控件和逻辑
+    }
+
     // MQTT初始化
     private void Mqtt_init() {
         try {
-            //host为主机名，test为clientid即连接MQTT的客户端ID，一般以客户端唯一标识符表示，MemoryPersistence设置clientid的保存形式，默认为以内存保存
-            client = new MqttClient(host, mqtt_id,
-                    new MemoryPersistence());
-            //MQTT的连接设置
+            // host为主机名，test为clientid即连接MQTT的客户端ID，一般以客户端唯一标识符表示，MemoryPersistence设置clientid的保存形式，默认为以内存保存
+            client = new MqttClient(host, mqtt_id, new MemoryPersistence());
+            // MQTT的连接设置
             MqttConnectOptions options = new MqttConnectOptions();
-            //设置是否清空session,这里如果设置为false表示服务器会保留客户端的连接记录，这里设置为true表示每次连接到服务器都以新的身份连接
+            // 设置是否清空session,这里如果设置为false表示服务器会保留客户端的连接记录，这里设置为true表示每次连接到服务器都以新的身份连接
             options.setCleanSession(false);
-            //设置连接的用户名
+            // 设置连接的用户名
             options.setUserName(userName);
-            //设置连接的密码
+            // 设置连接的密码
             options.setPassword(passWord.toCharArray());
             // 设置超时时间 单位为秒
             options.setConnectionTimeout(10);
             // 设置会话心跳时间 单位为秒 服务器会每隔1.5*20秒的时间向客户端发送个消息判断客户端是否在线，但这个方法并没有重连的机制
             options.setKeepAliveInterval(20);
-            //设置回调
+            // 设置回调
             client.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable cause) {
@@ -268,12 +356,6 @@ public class SlideActivity extends AppCompatActivity {
         btnOpen.setBackgroundResource(R.drawable.but_1);
     }
 
-
-//    // 在按钮点击或其他触发事件中调用此方法进行测试
-//    private void testPublishMessage() {
-//        publishMessagePlus(mqtt_pub_topic, "测试消息");
-//    }
-
     private void showConfirmationDialog(String title, String message, Runnable onConfirm) {
         new MaterialAlertDialogBuilder(this)
                 .setTitle(title)
@@ -282,7 +364,6 @@ public class SlideActivity extends AppCompatActivity {
                 .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
                 .show();
     }
-
 
     private void refreshLineChart() {
         Object[] x = new Object[]{
@@ -332,4 +413,3 @@ public class SlideActivity extends AppCompatActivity {
         }
     }
 }
-

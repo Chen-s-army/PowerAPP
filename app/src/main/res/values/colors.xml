@@ -4,4 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#00FF00</color>
     <color name="transparent">#00000000</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+
+    <!-- NavigationView的菜单项的文本颜色 -->
+    <color name="nav_drawer_menu_text_color">#434343</color>
 </resources>
