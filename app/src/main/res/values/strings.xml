@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Demo1</string>
+    <string name="app_name">安全用电侧控制APP</string>
     <string name="TopName">厂中厂安全用电侧控制APP</string>
     <string name="Title1">状态：</string>
     <string name="State1">运行状态：</string>

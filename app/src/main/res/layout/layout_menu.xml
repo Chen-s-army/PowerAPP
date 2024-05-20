@@ -10,10 +10,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#F4F4F4"
+            android:background="#00F4F4F4"
             android:orientation="vertical"
             android:padding="10dp">
 
@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="个人中心"
+                android:text="用户名"
                 android:textSize="18sp" />
 
         </LinearLayout>
@@ -42,12 +42,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/menu_item_background"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:scaleType="centerInside"
                     android:src="@mipmap/home" />
@@ -64,12 +65,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/menu_item_background"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:scaleType="centerInside"
                     android:src="@mipmap/user" />
@@ -83,16 +85,39 @@
                     android:textSize="18sp" />
             </LinearLayout>
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/menu_item_background"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="10dp"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/message" />
+
+                <TextView
+                    android:id="@+id/menu_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="消息"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/menu_item_background"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:scaleType="centerInside"
                     android:src="@mipmap/setting" />
@@ -109,12 +134,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/menu_item_background"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:scaleType="centerInside"
                     android:src="@mipmap/about" />
@@ -131,12 +157,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/menu_item_background"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:scaleType="centerInside"
                     android:src="@mipmap/out" />

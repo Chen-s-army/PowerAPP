@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         String not_input = "未输入账号或密码";
         Intent intent = null;
         // 假设正确的账号和密码分别是cyh, 123456
-        if (username.equals("cyh") && password.equals("123456")) {
+        if (username.equals("admin") && password.equals("123456")) {
             //正确则进行跳转
             intent = new Intent(LoginActivity.this, SlideActivity.class);
             startActivity(intent);

@@ -75,17 +75,31 @@ public class SlideActivity extends AppCompatActivity {
         // menu部分控件
         TextView menuHome = findViewById(R.id.menu_home);
         TextView menuInfo = findViewById(R.id.menu_info);
+        TextView menuMessage = findViewById(R.id.menu_message);
         TextView menuSetting = findViewById(R.id.menu_setting);
         TextView menuAbout = findViewById(R.id.menu_about);
         TextView menuExit = findViewById(R.id.menu_exit);
 
-        // 实现侧滑部分
+
+        // 创建MenuManager实例
+        MenuManager menuManager = new MenuManager();
+
+        // 添加菜单项到MenuManager
+        menuManager.addMenuItem(menuHome);
+        menuManager.addMenuItem(menuInfo);
+        menuManager.addMenuItem(menuSetting);
+        menuManager.addMenuItem(menuAbout);
+        menuManager.addMenuItem(menuExit);
+        menuManager.addMenuItem(menuMessage);
+
+        // 侧滑部分
         mHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 slideMenu.switchMenu();
             }
         });
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -96,35 +110,40 @@ public class SlideActivity extends AppCompatActivity {
         menuHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 动态切换为主页面
                 switchContent(R.layout.layout_main, SlideActivity.this::initHomePage);
             }
         });
+
         menuInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 动态切换为个人信息页面
                 switchContent(R.layout.layout_info, SlideActivity.this::initInfoPage);
             }
         });
+        menuMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchContent(R.layout.layout_message, SlideActivity.this::initMessagePage);
+            }
+        });
+
         menuSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 动态切换为设置页面
                 switchContent(R.layout.layout_setting, SlideActivity.this::initSettingPage);
             }
         });
+
         menuAbout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 动态切换为关于页面
                 switchContent(R.layout.layout_about, SlideActivity.this::initAboutPage);
             }
         });
+
         menuExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 退出应用
                 finish();
             }
         });
@@ -132,6 +151,8 @@ public class SlideActivity extends AppCompatActivity {
         // 默认加载主界面
         switchContent(R.layout.layout_main, this::initHomePage);
     }
+
+
 
     // 动态切换布局的方法
     private void switchContent(int layoutId, Runnable initializer) {
@@ -218,7 +239,8 @@ public class SlideActivity extends AppCompatActivity {
             }
         });
     }
-
+    private void initMessagePage() {
+    }
     // 初始化设置页面
     private void initSettingPage() {
         // 在这里初始化设置页面的控件和逻辑

@@ -40,6 +40,7 @@
             android:id="@+id/username"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:layout_weight="1"
             android:layout_marginStart="8dp"/>
     </LinearLayout>
@@ -64,6 +65,7 @@
             android:id="@+id/password"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:inputType="numberPassword"/>
