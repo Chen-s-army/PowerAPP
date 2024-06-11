@@ -14,8 +14,9 @@
     <string name="power">功 率</string>
     <string name="Temp"> </string>
     <string name="temp">温 度</string>
-    <string name="Open">开闸</string>
-    <string name="Close">合闸</string>
+    <string name="Open">一键总断路</string>
+    <string name="Open1">各键分断路</string>
+    <string name="Close">已断路</string>
     <string name="mqtt">MQTT:</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>

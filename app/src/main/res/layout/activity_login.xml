@@ -68,7 +68,7 @@
             android:singleLine="true"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:inputType="numberPassword"/>
+            />
     </LinearLayout>
 
     <LinearLayout

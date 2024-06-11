@@ -1,7 +1,5 @@
 package com.example.demo1;
 
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -13,12 +11,18 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.demo1.util.EchartOptionUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -35,7 +39,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
 public class MainActivity extends AppCompatActivity {
     private TextView mqttStatusTextView;
     private TextView current;
@@ -46,20 +49,144 @@ public class MainActivity extends AppCompatActivity {
     private ScheduledExecutorService scheduler;
     private MqttClient client;
     private Handler handler;
-    private String host = "tcp://122.51.210.27:1883";     // TCP协议
+    private String host = "tcp://122.51.210.27:1883";// TCP协议
     private String userName = "cyh991103";
     private String passWord = "cyh991103";
     private String mqtt_id = "power";
     private String mqtt_sub_topic = "power/sys";
     private String mqtt_pub_topic = "power/sys";
 
+    // 声明控件
+    private SlideMenu slideMenu;
+    private FrameLayout contentFrame;
+
+    int selectedMenuId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.layout_main);
+//        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        // 获取 Intent 并从中提取用户名
+        String username = getIntent().getStringExtra("username");
+        // 为主页设置底色
+        setMenuBackground(R.id.LinearLayout_home);
 
+        // 找到控件
+        slideMenu = findViewById(R.id.slideMenu);
+        contentFrame = findViewById(R.id.content_frame);
+
+        // menu部分控件
+        TextView menuHome = findViewById(R.id.text_Home);
+        TextView menuInfo = findViewById(R.id.text_User);
+        TextView menuMessage = findViewById(R.id.text_message);
+        TextView menuSetting = findViewById(R.id.text_setting);
+        TextView menuAbout = findViewById(R.id.text_about);
+        TextView menuExit = findViewById(R.id.text_Out);
+        TextView menuUser = findViewById(R.id.menu_username);
+
+        // 主页部分控件
+
+
+        menuUser.setText(username);
+
+
+        // 创建MenuManager实例
+        MenuManager menuManager = new MenuManager();
+
+        // 添加菜单项到MenuManager
+        menuManager.addMenuItem(menuHome);
+        menuManager.addMenuItem(menuInfo);
+        menuManager.addMenuItem(menuSetting);
+        menuManager.addMenuItem(menuAbout);
+        menuManager.addMenuItem(menuExit);
+        menuManager.addMenuItem(menuMessage);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        // 侧边部分对应页面跳转
+        menuHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchContent(R.layout.layout_main, MainActivity.this::initHomePage);
+                setMenuBackground(R.id.LinearLayout_home);
+            }
+        });
+
+        menuInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchContent(R.layout.layout_info, MainActivity.this::initInfoPage);
+                setMenuBackground(R.id.LinearLayout_info);
+            }
+        });
+        menuMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchContent(R.layout.layout_message, MainActivity.this::initMessagePage);
+                setMenuBackground(R.id.LinearLayout_message);
+            }
+        });
+
+        menuSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchContent(R.layout.layout_setting, MainActivity.this::initSettingPage);
+                setMenuBackground(R.id.LinearLayout_setting);
+            }
+        });
+
+        menuAbout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchContent(R.layout.layout_about, MainActivity.this::initAboutPage);
+                setMenuBackground(R.id.LinearLayout_about);
+            }
+        });
+
+        menuExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        // 默认加载主界面
+        switchContent(R.layout.layout_main, this::initHomePage);
+    }
+
+
+    // 动态切换布局的方法
+    private void switchContent(int layoutId, Runnable initializer) {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View newView = inflater.inflate(layoutId, null);
+        contentFrame.removeAllViews();
+        contentFrame.addView(newView);
+
+        // 调用相应的初始化方法
+        initializer.run();
+    }
+
+    // 设置菜单项背景颜色的方法
+    private void setMenuBackground(int layoutId) {
+        // 恢复先前选中菜单项的背景颜色
+        if (selectedMenuId != -1) {
+            LinearLayout previousSelectedMenu = findViewById(selectedMenuId);
+            previousSelectedMenu.setBackgroundColor(getResources().getColor(R.color.transparent));
+        }
+
+        // 更新选中菜单项的背景颜色
+        LinearLayout selectedMenu = findViewById(layoutId);
+        selectedMenu.setBackgroundColor(getResources().getColor(R.color.gray)); // 将 "gray" 替换为你希望的背景颜色
+        selectedMenuId = layoutId;
+    }
+
+    // 初始化主页面
+    private void initHomePage() {
         lineChart = findViewById(R.id.lineChart);
         btnOpen = findViewById(R.id.btn_open);
         mqttStatusTextView = findViewById(R.id.m_mqtt1);
@@ -67,11 +194,17 @@ public class MainActivity extends AppCompatActivity {
         power = findViewById(R.id.power);
         temperature = findViewById(R.id.temperature);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        // 设置主页的欢迎语
+        String username = getIntent().getStringExtra("username");
+        TextView homeUser = findViewById(R.id.home_username);
+        homeUser.setText("Hi," + username);
+
+        // MySQL连接
+
+        //加载图表数据
+        loadChartData();
+        Log.d("Echart", "页面已经加载");
+
         // MQTT连接
         Mqtt_init();
         startReconnect();
@@ -84,15 +217,14 @@ public class MainActivity extends AppCompatActivity {
                     case 3: // MQTT 收到消息回传
                         Log.d("MQTT", "处理消息: " + msg.obj.toString());
                         String receivedMessage = msg.obj.toString();
-                        parseJsonObj(receivedMessage);// 解析接收到的 JSON 数据并更新 UI
-                        System.out.println(receivedMessage);   // 显示MQTT数据
+                        parseJsonObj(receivedMessage); // 解析接收到的 JSON 数据并更新 UI
+                        System.out.println(receivedMessage); // 显示MQTT数据
                         break;
                     case 30: // 连接失败
                         Toast.makeText(MainActivity.this, "连接失败", Toast.LENGTH_SHORT).show();
                         mqttStatusTextView.setText("未连接");
                         break;
                     case 31: // 连接成功
-//                        Toast.makeText(MainActivity.this, "连接成功", Toast.LENGTH_SHORT).show();
                         mqttStatusTextView.setText("已连接");
                         Log.d("MQTT", "已连接");
 
@@ -109,38 +241,63 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        // 加载图表数据
-        loadChartData();
+
 
         // 设置按钮点击事件监听器
         btnOpen.setOnClickListener(v -> {
             if (btnOpen.getText().equals(getString(R.string.Open))) {
-                showConfirmationDialog("开闸操作", "你确定要开闸吗？", this::openGate);
-            } else {
-                showConfirmationDialog("合闸操作", "你确定要合闸吗？请等待工作人员手工合闸", this::closeGate);
+                showConfirmationDialog("总断路确认操作", "你确定要总断路吗？", this::openGate);
             }
         });
+    }
+
+    // 初始化个人信息页面
+    private void initInfoPage() {
+        EditText nameEditText = findViewById(R.id.info_name);
+        EditText emailEditText = findViewById(R.id.info_email);
+        Button saveButton = findViewById(R.id.info_save);
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = nameEditText.getText().toString();
+                String email = emailEditText.getText().toString();
+                // 保存个人信息的逻辑
+            }
+        });
+    }
+
+    private void initMessagePage() {
+    }
+
+    // 初始化设置页面
+    private void initSettingPage() {
+        // 在这里初始化设置页面的控件和逻辑
+    }
+
+    // 初始化关于页面
+    private void initAboutPage() {
+        // 在这里初始化关于页面的控件和逻辑
     }
 
     // MQTT初始化
     private void Mqtt_init() {
         try {
-            //host为主机名，test为clientid即连接MQTT的客户端ID，一般以客户端唯一标识符表示，MemoryPersistence设置clientid的保存形式，默认为以内存保存
-            client = new MqttClient(host, mqtt_id,
-                    new MemoryPersistence());
-            //MQTT的连接设置
+            // host为主机名，test为clientid即连接MQTT的客户端ID，一般以客户端唯一标识符表示，MemoryPersistence设置clientid的保存形式，默认为以内存保存
+            client = new MqttClient(host, mqtt_id, new MemoryPersistence());
+            // MQTT的连接设置
             MqttConnectOptions options = new MqttConnectOptions();
-            //设置是否清空session,这里如果设置为false表示服务器会保留客户端的连接记录，这里设置为true表示每次连接到服务器都以新的身份连接
+            // 设置是否清空session,这里如果设置为false表示服务器会保留客户端的连接记录，这里设置为true表示每次连接到服务器都以新的身份连接
             options.setCleanSession(false);
-            //设置连接的用户名
+            // 设置连接的用户名
             options.setUserName(userName);
-            //设置连接的密码
+            // 设置连接的密码
             options.setPassword(passWord.toCharArray());
             // 设置超时时间 单位为秒
             options.setConnectionTimeout(10);
             // 设置会话心跳时间 单位为秒 服务器会每隔1.5*20秒的时间向客户端发送个消息判断客户端是否在线，但这个方法并没有重连的机制
             options.setKeepAliveInterval(20);
-            //设置回调
+            // 设置回调
             client.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable cause) {
@@ -221,17 +378,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void loadChartData() {
-        lineChart.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                // 在h5页面加载完毕后加载数据
-                refreshLineChart();
-            }
-        });
-    }
-
     private void openGate() {
         // 开闸的实际操作代码
         publishMessagePlus(mqtt_pub_topic, "开闸");
@@ -250,12 +396,6 @@ public class MainActivity extends AppCompatActivity {
         btnOpen.setBackgroundResource(R.drawable.but_1);
     }
 
-
-//    // 在按钮点击或其他触发事件中调用此方法进行测试
-//    private void testPublishMessage() {
-//        publishMessagePlus(mqtt_pub_topic, "测试消息");
-//    }
-
     private void showConfirmationDialog(String title, String message, Runnable onConfirm) {
         new MaterialAlertDialogBuilder(this)
                 .setTitle(title)
@@ -265,6 +405,16 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void loadChartData() {
+        lineChart.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // 在h5页面加载完毕后加载数据
+                refreshLineChart();
+            }
+        });
+    }
 
     private void refreshLineChart() {
         Object[] x = new Object[]{
@@ -276,20 +426,19 @@ public class MainActivity extends AppCompatActivity {
         Object[] y3 = generateRandomData();
         Object[] y4 = generateRandomData();
         Object[] y5 = generateRandomData();
-        Object[] y6 = generateRandomData();
-        Object[] y7 = new Object[7];
+        Object[] y6 = new Object[6];
 
         // 计算y7
-        for (int i = 0; i < 7; i++) {
-            y7[i] = (int) y[i] + (int) y2[i] + (int) y3[i] + (int) y4[i] + (int) y5[i] + (int) y6[i];
+        for (int i = 0; i < 6; i++) {
+            y6[i] = (int) y[i] + (int) y2[i] + (int) y3[i] + (int) y4[i] + (int) y5[i] ;
         }
 
-        lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y, y2, y3, y4, y5, y6, y7));
+        lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y, y2, y3, y4, y5, y6));
     }
 
     private Object[] generateRandomData() {
-        Object[] data = new Object[7];
-        for (int i = 0; i < 7; i++) {
+        Object[] data = new Object[6];
+        for (int i = 0; i < 6; i++) {
             data[i] = (int) (Math.random() * 4 + 1);
         }
         return data;
@@ -305,9 +454,9 @@ public class MainActivity extends AppCompatActivity {
             String WD = jsonObject.getString("WD");
 
             //设置文本内容
-            current.setText(DL + "v");
-            power.setText(GL + "w");
-            temperature.setText(WD + "℃");
+            current.setText("电流" + " " + DL + "A");
+            power.setText("功率" + " " + GL + "W");
+            temperature.setText("温度" + " " + WD + "℃");
 
         } catch (JSONException e) {
             e.printStackTrace();
